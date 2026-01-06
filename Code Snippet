@@ -1,9 +1,6 @@
-Sanitised excerpt – identifiers, data sources, and business logic have been modified for confidentiality.
-
-"""
 Anonymised excerpt – identifiers and data sources modified.
 This snippet demonstrates application structure and callback logic only.
-"""
+
 
 from dash import Dash, dcc, html, Input, Output, State
 import geopandas as gpd
