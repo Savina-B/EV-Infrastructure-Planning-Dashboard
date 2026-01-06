@@ -1,0 +1,53 @@
+Sanitised excerpt – identifiers, data sources, and business logic have been modified for confidentiality.
+
+"""
+Anonymised excerpt – identifiers and data sources modified.
+This snippet demonstrates application structure and callback logic only.
+"""
+
+from dash import Dash, dcc, html, Input, Output, State
+import geopandas as gpd
+import pandas as pd
+
+app = Dash(__name__)
+server = app.server
+
+# Load representative geospatial data
+geo_df = gpd.read_file("data/regions.geojson").to_crs(epsg=4326)
+metrics_df = pd.read_csv("data/aggregated_scores.csv")
+
+app.layout = html.Div([
+    html.H3("EV Infrastructure Planning Dashboard"),
+    dcc.Dropdown(
+        id="scenario-select",
+        options=[
+            {"label": "Scenario A", "value": "A"},
+            {"label": "Scenario B", "value": "B"}
+        ],
+        value="A"
+    ),
+    dcc.Slider(
+        id="weight-slider",
+        min=0,
+        max=10,
+        step=1,
+        value=5
+    ),
+    dcc.Graph(id="map-view")
+])
+
+@app.callback(
+    Output("map-view", "figure"),
+    Input("scenario-select", "value"),
+    Input("weight-slider", "value")
+)
+def update_map(selected_scenario, weight):
+    filtered = metrics_df.copy()
+    filtered["score"] = filtered["base_score"] * weight
+
+    # Map rendering logic abstracted
+    figure = create_choropleth(geo_df, filtered)
+    return figure
+
+if __name__ == "__main__":
+    app.run_server()
